@@ -11,6 +11,11 @@ node_modules
 dist
 dist-ssr
 *.local
+package.json
+tsconfig.json
+tsconfig.node.json
+vite.config.ts
+yarn.lock
 
 # Editor directories and files
 .vscode/*
