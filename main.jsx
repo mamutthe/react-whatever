@@ -1,4 +1,8 @@
 import ReactDOM from "react-dom";
-import { Button } from "./counter/counter.jsx";
+import { createRoot } from "react-dom/client";
+import { Button } from "./components/counter.jsx";
+import Todo from "./components/todo.tsx";
+import "./styles/index.css";
 
-ReactDOM.render(<Button />, document.getElementById("root"));
+const root = createRoot(document.getElementById("root"));
+root.render(<Todo />);
