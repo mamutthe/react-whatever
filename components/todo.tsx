@@ -25,7 +25,7 @@ const Task: React.FC<{
     hover:bg-slate-50 font-mono font-extrabold text-2xl flex flex-row-reverse
     justify-end transition-all"
     >
-      <p className="truncate">{name}</p>
+      <p>{name}</p>
       <input type="checkbox" onChange={handleChange} className="mr-5"></input>
     </div>
   );
