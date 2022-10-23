@@ -1,17 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 type SearchBarTYPE = React.DetailedHTMLProps<
-React.FormHTMLAttributes<HTMLFormElement>,
-HTMLFormElement
+  React.FormHTMLAttributes<HTMLFormElement>,
+  HTMLFormElement
 >;
+type CEPCardTYPE = {
+  cep?: string | undefined;
+  state?: string | undefined;
+  city?: string | undefined;
+  neighborhood?: string | undefined;
+  street: string;
+}
 
 type ButtonTYPE = React.DetailedHTMLProps<
-React.ButtonHTMLAttributes<HTMLButtonElement>,
-HTMLButtonElement
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
 >;
-
-const Teste = () => React.createElement('teste', {className:"flex shadow-xl shadow-gray-200 hover:shadow-gray-300 rounded-3xl"}, 'hello world')
 
 const SearchBar: React.FC<SearchBarTYPE> = ({ ...rest }) => {
   return (
@@ -29,7 +34,7 @@ const SearchBar: React.FC<SearchBarTYPE> = ({ ...rest }) => {
         "
         type="text"
         /*        placeholder="Pesquisar" */
-        />
+      />
     </form>
   );
 };
@@ -37,8 +42,8 @@ const SearchBar: React.FC<SearchBarTYPE> = ({ ...rest }) => {
 const ClearButton: React.FC<ButtonTYPE> = (rest) => {
   return (
     <button
-    {...rest}
-    className="p-4 flex items-center justify-center
+      {...rest}
+      className="p-4 flex items-center justify-center
     rounded-r-3xl border-gray-500 bg-gray-50"
     >
       <XMarkIcon className="w-12 h-12 text-red-600" />
@@ -46,23 +51,19 @@ const ClearButton: React.FC<ButtonTYPE> = (rest) => {
   );
 };
 
-const CEPCard: React.FC<{
-  cep: string | undefined;
-  state: string | undefined;
-  city: string | undefined;
-  neighborhood: string | undefined;
-  street: string;
-}> = ({ cep, state, city, neighborhood, street }) => {
+const CEPCard: React.FC<CEPCardTYPE>  = ({ cep, state, city, neighborhood, street}) => {
+  const CEPCardRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   return (
     <div
-    className=" flex flex-col items-center justify-center
+      ref={CEPCardRef}
+      className=" flex flex-col items-center justify-center
     shadow-gray-200 bg-white rounded-3xl 
-    py-4 font-mono text-slate-900"
+    py-4 font-mono text-slate-900 transition-all"
     >
       <div className="w-fit">
-        <p className="text-4xl text-center">{street}</p>
+        <p className="md:text-4xl text-2xl text-center">{street}</p>
         {state && city && neighborhood && (
-          <p className="text-2xl text-center">
+          <p className="md:text-2xl text-xl text-center">
             {neighborhood} - {city}/{state}
           </p>
         )}
@@ -78,35 +79,38 @@ const CEPCard: React.FC<{
 
 export default () => {
   const [dot, setDot] = useState("");
-  const [cep, setCep] = useState<any>(undefined);
+  const [CEPInfo, setCepInfo] = useState<CEPCardTYPE>();
+
   useEffect(() => {
     const interval = setInterval(() => {
       setDot((dot) => (dot.length < 3 ? dot + "." : ""));
     }, 500);
     return () => clearInterval(interval);
   }, []);
-  
-  async function getCEPAPI(cep: string) {
+
+  const CEPCardRef = useRef<HTMLDivElement>(null);
+
+  async function getCEPAPI(CEPNumber: string) {
     const brasilAPICEP = await fetch(
-      `https://brasilapi.com.br/api/cep/v1/${cep}`
-      );
-      if (brasilAPICEP.ok) {
-        const data = await brasilAPICEP.json();
-        setCep(data);
-      } else
-      setCep({
+      `https://brasilapi.com.br/api/cep/v1/${CEPNumber}`
+    );
+    if (brasilAPICEP.ok) {
+      const data = await brasilAPICEP.json();
+      setCepInfo(data);
+    } else
+      setCepInfo({
         street: "Não foi possível encontrar o CEP",
       });
   }
-  
+
   return (
     <div className="bg-slate-200 h-screen">
       <div className="m-auto max-w-2xl  p-3 flex flex-col justify-center space-y-10 pt-24">
-        {cep ? (
-          <CEPCard {...cep} />
+        {CEPInfo ? (
+          <CEPCard {...CEPInfo} />
         ) : (
-          <div className="flex justify-center w-full text-slate-900 font-mono md:text-5xl text-xl">
-            <h1 className="text-center">Digite o nome da rua</h1>
+          <div className="flex justify-center w-full text-slate-900 font-mono md:text-5xl text-3xl">
+            <h1 className="text-center">Insira o número do CEP</h1>
             <span className="w-10">{dot}</span>
           </div>
         )}
@@ -121,12 +125,12 @@ export default () => {
           />
           <ClearButton
             onClick={() => {
-              setCep(undefined);
+              CEPCardRef.current?.setAttribute("style", "opacity: 0");
+              /* setCep(undefined) */
             }}
           />
         </div>
       </div>
-      <Teste/>
     </div>
   );
 };
