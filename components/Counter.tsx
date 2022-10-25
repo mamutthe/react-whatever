@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-function Counter(props) {
-  return <h1>{props.count}</h1>;
+function Counter({ count }: { count: number }) {
+  return <h1>{count}</h1>;
 }
 
 export function Button() {
