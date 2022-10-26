@@ -11,7 +11,7 @@ type CEPCardTYPE = {
   city?: string | undefined;
   neighborhood?: string | undefined;
   street: string;
-}
+};
 
 type ButtonTYPE = React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -51,7 +51,13 @@ const ClearButton: React.FC<ButtonTYPE> = (rest) => {
   );
 };
 
-const CEPCard: React.FC<CEPCardTYPE>  = ({ cep, state, city, neighborhood, street}) => {
+const CEPCard: React.FC<CEPCardTYPE> = ({
+  cep,
+  state,
+  city,
+  neighborhood,
+  street,
+}) => {
   const CEPCardRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   return (
     <div
@@ -94,7 +100,7 @@ export default () => {
     const brasilAPICEP = await fetch(
       `https://brasilapi.com.br/api/cep/v1/${CEPNumber}`
     );
-    if (brasilAPICEP.ok) {
+     if (brasilAPICEP.ok) {
       const data = await brasilAPICEP.json();
       setCepInfo(data);
     } else
@@ -126,7 +132,7 @@ export default () => {
           <ClearButton
             onClick={() => {
               CEPCardRef.current?.setAttribute("style", "opacity: 0");
-              /* setCep(undefined) */
+              setCepInfo(undefined);
             }}
           />
         </div>
