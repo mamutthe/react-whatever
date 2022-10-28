@@ -3,10 +3,16 @@
 @tailwind utilities;
 
 @layer components {
-    .card {
-        @apply flex justify-center items-center rounded-[2rem] bg-white/90 shadow-lg shadow-neutral-200
-    }
-    .center {
-        @apply flex justify-center items-center
-    }
+  .card {
+    @apply flex justify-center items-center rounded-[2rem] bg-white/90 shadow-lg shadow-neutral-200;
+  }
+  .flex-center {
+    @apply flex justify-center items-center;
+  }
+  .alternative-card {
+    @apply w-full h-20 hover:bg-slate-200/50 cursor-pointer border-[0.15rem] border-slate-800 rounded-xl;
+  }
+  .alternative-text {
+    @apply font-mono font-semibold text-2xl text-slate-800;
+  }
 }
