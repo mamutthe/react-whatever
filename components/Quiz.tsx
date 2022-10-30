@@ -1,15 +1,28 @@
 import React, { useState } from 'react';
-type quizTYPE = {
-  question: string;
-  answer: string;
-  options: string[];
-};
 
-/* alternative card
- <div className="alternative-card">
-          <p className="alternative-text">Alternativa 1</p>
-</div>
-*/
+type quizHeaderTYPE = {
+  quizTitle: string,
+  quizTendency: {
+    [key:number]: string
+  }
+}
+
+type alternativeTYPE = {
+  text: string, 
+  tendency: number,
+  tendencyAlt?: number
+}
+
+type quizQuestionsTYPE = {
+  questionTitle: string,
+  alternatives:alternativeTYPE[]  
+}
+
+type quizTYPE = {
+  quizHeader: quizHeaderTYPE 
+  quizQuestions: quizQuestionsTYPE[]
+}
+
 const QuestionCard = ({ questionTitle }: { questionTitle: string }) => (
   <div className="card w-auto h-28 my-5 md:mx-48 mx-5">
     <h1 className="font-mono font-semibold text-blue-500 md:text-3xl text-xl text-center">
@@ -29,7 +42,7 @@ const AnswersCard = ({ alternatives }) => {
 };
 
 export default () => {
-  const quiz: any = {
+  const quiz:quizTYPE = {
     quizHeader: {
       quizTitle: 'Qual bairro de araçatuba mais combina com você 🤔 ?',
       quizTendency: {
@@ -80,20 +93,21 @@ export default () => {
     ]
   };
 
-  const [questionTitle, setQuestionTitle] = useState('');
-  const [quizQuestionNumber, setQuizQuestionNumber] = useState(0);
-  const [isQuizActive, setIsQuizActive] = useState(false);
+  const [quizQuestionNumber, setQuizQuestionNumber] = useState<undefined | number>(undefined);
   const [currentTendency, setCurrentTendency] = useState(0);
-  setQuestionTitle(quiz.quizQuestions[quizQuestionNumber].questionTitle);
 
-  function handleQuiz(quizQuestionNumber: number) {
-    setIsQuizActive(true);
+
+  function handleQuiz(quizQuestionNumber: number | undefined) {
     console.log(quizQuestionNumber);
-    setQuestionTitle(quiz.quizQuestions[quizQuestionNumber].questionTitle);
-    setQuizQuestionNumber(() => quizQuestionNumber + 1);
+    setQuizQuestionNumber((value)=> {
+      if (value === undefined) {
+        return 0;
+      }
+      return value + 1;
+    });
   }
 
-  function buffer(alternative) {
+  function buffer(alternative: alternativeTYPE) {
     const tendencyValue = alternative.tendency;
     if (alternative.tendencyAlt !== undefined) {
       const tendencyAltValue = alternative.tendencyAlt;
@@ -102,25 +116,19 @@ export default () => {
 
   return (
     <div className="bg-slate-200 flex flex-col h-screen">
-      {isQuizActive ? (
-        <>
-          <QuestionCard questionTitle={questionTitle} />
+          <QuestionCard questionTitle={quiz.quizQuestions[quizQuestionNumber as number]?.questionTitle} />
           <AnswersCard
-            alternatives={quiz.quizQuestions[quizQuestionNumber].alternatives.map((alternative) => {
+            alternatives={quiz.quizQuestions[quizQuestionNumber as number]?.alternatives.map((alternative) => {
               return (
                 <div
                   key={alternative.text}
-                  onClick={(alternative) => {
-                    buffer(alternative);
-                  }}
+                  onClick={() => {buffer(alternative)}}
                   className="alternative-card flex-center">
                   <p className="alternative-text">{alternative.text}</p>
                 </div>
               );
             })}
           />
-        </>
-      ) : null}
       <button onClick={() => handleQuiz(quizQuestionNumber)}>click me</button>
     </div>
   );
