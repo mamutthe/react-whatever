@@ -1,39 +1,67 @@
 import React, { useState } from 'react';
 
+type StartQuizButtonTYPE = React.DetailedHTMLProps<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
+>;
+
 type quizHeaderTYPE = {
-  quizTitle: string,
+  quizTitle: string;
   quizTendency: {
-    [key:number]: string
-  }
-}
+    [key: number]: string;
+  };
+};
 
 type alternativeTYPE = {
-  text: string, 
-  tendency: number,
-  tendencyAlt?: number
-}
+  text: string;
+  tendency: number;
+  tendencyAlt?: number;
+};
 
 type quizQuestionsTYPE = {
-  questionTitle: string,
-  alternatives:alternativeTYPE[]  
-}
+  questionTitle: string;
+  alternatives: alternativeTYPE[];
+};
 
 type quizTYPE = {
-  quizHeader: quizHeaderTYPE 
-  quizQuestions: quizQuestionsTYPE[]
-}
+  quizHeader: quizHeaderTYPE;
+  quizQuestions: quizQuestionsTYPE[];
+};
+
+const StartQuizCard = ({
+  quizTitle,
+  children
+}: {
+  quizTitle: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <div className="quiz-card flex flex-col mx-16 my-16 h-full border-solid border-green-600 border-2">
+      <h1 className="quiz-title md:text-3xl text-2xl">{quizTitle}</h1>
+      {children}
+    </div>
+  );
+};
+
+const StartQuizButton: React.FC<StartQuizButtonTYPE> = ({ ...rest }) => {
+  return (
+    <button
+      {...rest}
+      className="my-20 text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-32 py-6 mr-2 mb-2">
+      Começar Quiz
+    </button>
+  );
+};
 
 const QuestionCard = ({ questionTitle }: { questionTitle: string }) => (
-  <div className="card w-auto h-28 my-5 md:mx-48 mx-5">
-    <h1 className="font-mono font-semibold text-blue-500 md:text-3xl text-xl text-center">
-      {questionTitle}
-    </h1>
+  <div className="quiz-card w-auto h-28 my-5 md:mx-48 mx-5">
+    <h1 className="quiz-title">{questionTitle}</h1>
   </div>
 );
 
 const AnswersCard = ({ alternatives }) => {
   return (
-    <div className="card w-auto h-[30rem] md:mx-48 mx-5">
+    <div className="quiz-card w-auto h-[30rem] md:mx-48 mx-5 overflow-hidden">
       <div className="grid grid-rows-4 grid-flow-col gap-x-4 gap-y-6 w-full px-12">
         {alternatives}
       </div>
@@ -42,7 +70,11 @@ const AnswersCard = ({ alternatives }) => {
 };
 
 export default () => {
-  const quiz:quizTYPE = {
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [quizQuestionNumber, setQuizQuestionNumber] = useState<undefined | number>(undefined);
+  const [currentTendency, setCurrentTendency] = useState({});
+
+  const quiz: quizTYPE = {
     quizHeader: {
       quizTitle: 'Qual bairro de araçatuba mais combina com você 🤔 ?',
       quizTendency: {
@@ -93,43 +125,96 @@ export default () => {
     ]
   };
 
-  const [quizQuestionNumber, setQuizQuestionNumber] = useState<undefined | number>(undefined);
-  const [currentTendency, setCurrentTendency] = useState(0);
-
-
-  function handleQuiz(quizQuestionNumber: number | undefined) {
-    console.log(quizQuestionNumber);
-    setQuizQuestionNumber((value)=> {
-      if (value === undefined) {
-        return 0;
+  function startQuiz(): void {
+    setIsRunning(true);
+    setCurrentTendency(() => {
+      const tendencyObject = {};
+      for (let i = 1; i <= Object.keys(quiz.quizHeader.quizTendency).length; i++) {
+        tendencyObject[i] = 0;
       }
-      return value + 1;
+      return tendencyObject;
     });
   }
 
-  function buffer(alternative: alternativeTYPE) {
-    const tendencyValue = alternative.tendency;
-    if (alternative.tendencyAlt !== undefined) {
-      const tendencyAltValue = alternative.tendencyAlt;
+  function nextQuestion(quizQuestionNumber: number | undefined): void {
+    setQuizQuestionNumber((quizQuestionNumber) => {
+      if (quizQuestionNumber === undefined) {
+        return 0;
+      }
+      return quizQuestionNumber + 1;
+    });
+
+    if ((quizQuestionNumber as number) === quiz.quizQuestions.length - 1) {
+      handleResult();
     }
+  }
+
+  function buffer(alternative: alternativeTYPE): void {
+    const tendencyValue = alternative.tendency;
+    let tendencyAltValue = 0;
+    if (alternative.tendencyAlt !== undefined) {
+      tendencyAltValue = alternative.tendencyAlt;
+    }
+
+    setCurrentTendency((currentTendency) => {
+      const tendencyObject = currentTendency;
+      tendencyObject[tendencyValue] = tendencyObject[tendencyValue] + 1;
+      if (alternative.tendencyAlt !== undefined) {
+        tendencyObject[tendencyAltValue] = tendencyObject[tendencyAltValue] + 1;
+      }
+      return tendencyObject;
+    });
+    setTimeout(() => {
+      console.log(currentTendency);
+    }, 100);
+  }
+
+  function handleResult() {
+    return {};
   }
 
   return (
     <div className="bg-slate-200 flex flex-col h-screen">
-          <QuestionCard questionTitle={quiz.quizQuestions[quizQuestionNumber as number]?.questionTitle} />
-          <AnswersCard
-            alternatives={quiz.quizQuestions[quizQuestionNumber as number]?.alternatives.map((alternative) => {
-              return (
-                <div
-                  key={alternative.text}
-                  onClick={() => {buffer(alternative)}}
-                  className="alternative-card flex-center">
-                  <p className="alternative-text">{alternative.text}</p>
-                </div>
-              );
-            })}
+      {isRunning ? null : (
+        <StartQuizCard quizTitle={quiz.quizHeader.quizTitle}>
+          <StartQuizButton
+            onClick={() => {
+              startQuiz();
+              nextQuestion(quizQuestionNumber);
+            }}
           />
-      <button onClick={() => handleQuiz(quizQuestionNumber)}>click me</button>
+        </StartQuizCard>
+      )}
+      {isRunning ? (
+        <>
+          <QuestionCard
+            questionTitle={quiz.quizQuestions[quizQuestionNumber as number]?.questionTitle}
+          />
+          <AnswersCard
+            alternatives={quiz.quizQuestions[quizQuestionNumber as number]?.alternatives.map(
+              (alternative, index) => {
+                //Assign different slide up animation timming for each div
+                const animationDelay = 0;
+                if (index === 0) {
+                }
+
+                return (
+                  <div
+                    key={alternative.text}
+                    onClick={() => {
+                      buffer(alternative);
+                      nextQuestion(quizQuestionNumber);
+                    }}
+                    style={{ animation: `slide-up ${animationDelay}s ease` }}
+                    className="alternative-card flex-center">
+                    <p className="alternative-text">{alternative.text}</p>
+                  </div>
+                );
+              }
+            )}
+          />
+        </>
+      ) : null}
     </div>
   );
 };
