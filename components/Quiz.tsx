@@ -194,8 +194,11 @@ export default () => {
             alternatives={quiz.quizQuestions[quizQuestionNumber as number]?.alternatives.map(
               (alternative, index) => {
                 //Assign different slide up animation timming for each div
-                const animationDelay = 0;
+                let animationDelay = 0;
                 if (index === 0) {
+                  animationDelay = index + 0.1;
+                } else {
+                  animationDelay = index *0.2;
                 }
 
                 return (
