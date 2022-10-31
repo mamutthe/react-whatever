@@ -3,16 +3,28 @@
 @tailwind utilities;
 
 @layer components {
-  .card {
+  .quiz-title {
+    @apply font-mono font-semibold text-blue-500 md:text-3xl text-xl text-center;
+  }
+  .quiz-card {
     @apply flex justify-center items-center rounded-[2rem] bg-white/90 shadow-lg shadow-neutral-200;
   }
   .flex-center {
     @apply flex justify-center items-center;
   }
   .alternative-card {
-    @apply w-full h-20 hover:bg-slate-200/50 cursor-pointer border-[0.15rem] border-slate-800 rounded-xl;
+    @apply w-full h-20 hover:bg-slate-200/50 cursor-pointer border-[0.15rem] border-slate-800 rounded-xl shadow-md shadow-neutral-200;
   }
   .alternative-text {
     @apply font-mono font-semibold text-2xl text-slate-800;
+  }
+
+  @keyframes slide-up {
+    0% {
+      transform: translateY(250px);
+    }
+    100% {
+      transform: translateY(0);
+    }
   }
 }

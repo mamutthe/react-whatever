@@ -1,11 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from 'react';
 
 const TaskInput = React.forwardRef<HTMLInputElement>((props, ref) => (
-  <input
-    ref={ref}
-    placeholder="Insert a task"
-    className="py-2 px-1 rounded text-center"
-  ></input>
+  <input ref={ref} placeholder="Insert a task" className="py-2 px-1 rounded text-center"></input>
 ));
 
 const Task: React.FC<{
@@ -14,17 +10,16 @@ const Task: React.FC<{
 }> = ({ name, onRemove }) => {
   function handleChange(e) {
     //Fade Out removal
-    e.target.parentElement.style = "opacity: 0";
+    e.target.parentElement.style = 'opacity: 0';
     setTimeout(onRemove, 500);
-    console.log(name, "handleChange");
+    console.log(name, 'handleChange');
   }
 
   return (
     <div
       className="text-button bg-white shadow-xl rounded py-5 px-10
     hover:bg-slate-50 font-mono font-extrabold text-2xl flex flex-row-reverse
-    justify-end transition-all"
-    >
+    justify-end transition-all">
       <p>{name}</p>
       <input type="checkbox" onChange={handleChange} className="mr-5"></input>
     </div>
@@ -39,8 +34,7 @@ const AddTaskButton = React.forwardRef<
     {...props}
     ref={ref}
     className="text-black bg-white shadow-xl rounded py-5 px-10
-     hover:bg-slate-50 font-mono font-extrabold text-2xl"
-  >
+     hover:bg-slate-50 font-mono font-extrabold text-2xl">
     ADD TASK
   </button>
 ));
@@ -48,23 +42,23 @@ const AddTaskButton = React.forwardRef<
 export default () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [task, setTask] = useState<string[]>([
-    "Pet a dog",
-    "Debug some code",
-    "Perform experiments",
-    "Center a DIV",
-    "Hunt a wild JS",
-    "I love TS",
-    "I hate TS",
+    'Pet a dog',
+    'Debug some code',
+    'Perform experiments',
+    'Center a DIV',
+    'Hunt a wild JS',
+    'I love TS',
+    'I hate TS'
   ]);
 
   function handleAddTask(e) {
     e.preventDefault();
     if (inputRef.current == null) return;
     const value = inputRef.current.value;
-    if (value.length == 0) return alert("You must insert a task first");
-    if (task.includes(value)) return alert("You already added this task");
+    if (value.length == 0) return alert('You must insert a task first');
+    if (task.includes(value)) return alert('You already added this task');
     setTask([...task, value]);
-    inputRef.current.value = "";
+    inputRef.current.value = '';
     console.log(value);
   }
 
@@ -75,7 +69,7 @@ export default () => {
           <Task
             onRemove={() => {
               setTask(task.filter((x) => x !== name));
-              console.log(name, "removeu");
+              console.log(name, 'removeu');
             }}
             name={name}
             key={name}
