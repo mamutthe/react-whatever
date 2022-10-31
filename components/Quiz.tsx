@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-type StartQuizButtonTYPE = React.DetailedHTMLProps<
+type quizButtonTYPE = React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
 >;
@@ -43,12 +43,27 @@ const StartQuizCard = ({
   );
 };
 
-const StartQuizButton: React.FC<StartQuizButtonTYPE> = ({ ...rest }) => {
+const ResultCard = ({result}:{result: string}) => {
+  function restartQuiz () {
+    window.location.reload();
+  }
+  return (
+    <div className="quiz-card flex-col space-y-16 w-auto h-full my-5 md:mx-48 mx-5">
+      <h1 className='quiz-title md:text-4xl text-xl'>O bairro que mais combina é: </h1>
+      <p className='font-mono font-extrabold text-7xl'>{result}</p>
+      <QuizButton onClick={restartQuiz}>
+          Reiniciar
+      </QuizButton>
+    </div>
+    );
+  };
+
+const QuizButton = ({onClick, children}:{onClick: ()=>void, children: string}) => {
   return (
     <button
-      {...rest}
-      className="my-20 text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-32 py-6 mr-2 mb-2">
-      Começar Quiz
+      {...onClick}
+      className="my-20 text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-xl px-32 py-6 mr-2 mb-2">
+      {children}
     </button>
   );
 };
@@ -170,23 +185,13 @@ export default () => {
   }
 
   function handleResult() {
-    return {};
+    //check which tendency has the highest value;
+    const tendencyValues = Object.values(currentTendency);
   }
 
   return (
     <div className="bg-slate-200 flex flex-col h-screen">
-      {isRunning ? null : (
-        <StartQuizCard quizTitle={quiz.quizHeader.quizTitle}>
-          <StartQuizButton
-            onClick={() => {
-              startQuiz();
-              nextQuestion(quizQuestionNumber);
-            }}
-          />
-        </StartQuizCard>
-      )}
-      {isRunning ? (
-        <>
+      {/* {isRunning ?   <>
           <QuestionCard
             questionTitle={quiz.quizQuestions[quizQuestionNumber as number]?.questionTitle}
           />
@@ -216,8 +221,17 @@ export default () => {
               }
             )}
           />
-        </>
-      ) : null}
+        </> : (
+        <StartQuizCard quizTitle={quiz.quizHeader.quizTitle}>
+          <QuizButton
+            onClick={() => {
+              startQuiz();
+              nextQuestion(quizQuestionNumber);
+            }}
+          />
+        </StartQuizCard>
+      )} */}
+      <ResultCard result='JARDIM SUMARÉ'/>
     </div>
   );
 };
