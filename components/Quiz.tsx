@@ -36,32 +36,30 @@ const StartQuizCard = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="quiz-card flex flex-col mx-16 my-16 h-full border-solid border-green-600 border-2">
+    <div className="quiz-card flex flex-col mx-16 my-16 h-full">
       <h1 className="quiz-title md:text-3xl text-2xl">{quizTitle}</h1>
       {children}
     </div>
   );
 };
 
-const ResultCard = ({result}:{result: string}) => {
-  function restartQuiz () {
+const ResultCard = ({ result }: { result: string }) => {
+  function restartQuiz() {
     window.location.reload();
   }
   return (
     <div className="quiz-card flex-col space-y-16 w-auto h-full my-5 md:mx-48 mx-5">
-      <h1 className='quiz-title md:text-4xl text-xl'>O bairro que mais combina é: </h1>
-      <p className='font-mono font-extrabold text-7xl'>{result}</p>
-      <QuizButton onClick={restartQuiz}>
-          Reiniciar
-      </QuizButton>
+      <h1 className="quiz-title md:text-4xl text-xl">O bairro que mais combina é: </h1>
+      <p className="font-mono font-extrabold text-7xl text-center">{result}</p>
+      <QuizButton onClick={restartQuiz}>Reiniciar</QuizButton>
     </div>
-    );
-  };
+  );
+};
 
-const QuizButton = ({onClick, children}:{onClick: ()=>void, children: string}) => {
+const QuizButton = ({ onClick, children }: { onClick: () => void; children: string }) => {
   return (
     <button
-      {...onClick}
+      onClick={onClick}
       className="my-20 text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-xl px-32 py-6 mr-2 mb-2">
       {children}
     </button>
@@ -85,9 +83,11 @@ const AnswersCard = ({ alternatives }) => {
 };
 
 export default () => {
-  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [hasQuizStarted, setHasQuizStarted] = useState<boolean>(false);
+  const [hasQuizFinshed, setHasQuizFinished] = useState<boolean>(false);
   const [quizQuestionNumber, setQuizQuestionNumber] = useState<undefined | number>(undefined);
   const [currentTendency, setCurrentTendency] = useState({});
+  const [quizResult, setQuizResult] = useState<string>('');
 
   const quiz: quizTYPE = {
     quizHeader: {
@@ -141,7 +141,7 @@ export default () => {
   };
 
   function startQuiz(): void {
-    setIsRunning(true);
+    setHasQuizStarted(true);
     setCurrentTendency(() => {
       const tendencyObject = {};
       for (let i = 1; i <= Object.keys(quiz.quizHeader.quizTendency).length; i++) {
@@ -179,6 +179,7 @@ export default () => {
       }
       return tendencyObject;
     });
+
     setTimeout(() => {
       console.log(currentTendency);
     }, 100);
@@ -186,12 +187,30 @@ export default () => {
 
   function handleResult() {
     //check which tendency has the highest value;
-    const tendencyValues = Object.values(currentTendency);
+    setHasQuizStarted(false);
+    setHasQuizFinished(true);
+    const tendencyValues: number[] = Object.values(currentTendency);
+    const tendencyKeys = Object.keys(currentTendency);
+    const tendencyMax = Math.max(...tendencyValues);
+    let result: number = 0;
+    tendencyKeys.forEach((foo, index) => {
+      if (currentTendency[index] == tendencyMax) {
+        result = index + 1;
+      }
+    });
+
+    if (typeof result === 'number') {
+      setQuizResult(quiz.quizHeader.quizTendency[result]);
+    }
+    setTimeout(() => {
+      console.log(quizResult);
+    }, 100);
   }
 
   return (
     <div className="bg-slate-200 flex flex-col h-screen">
-      {/* {isRunning ?   <>
+      {hasQuizStarted ? (
+        <>
           <QuestionCard
             questionTitle={quiz.quizQuestions[quizQuestionNumber as number]?.questionTitle}
           />
@@ -203,7 +222,7 @@ export default () => {
                 if (index === 0) {
                   animationDelay = index + 0.1;
                 } else {
-                  animationDelay = index *0.2;
+                  animationDelay = index * 0.2;
                 }
 
                 return (
@@ -221,17 +240,19 @@ export default () => {
               }
             )}
           />
-        </> : (
+        </>
+      ) : (
         <StartQuizCard quizTitle={quiz.quizHeader.quizTitle}>
           <QuizButton
             onClick={() => {
               startQuiz();
               nextQuestion(quizQuestionNumber);
-            }}
-          />
+            }}>
+            Começar Quiz
+          </QuizButton>
         </StartQuizCard>
-      )} */}
-      <ResultCard result='JARDIM SUMARÉ'/>
+      )}
+      {hasQuizFinshed && <ResultCard result={quizResult} />}
     </div>
   );
 };
