@@ -4,19 +4,19 @@
 
 @layer components {
   .quiz-title {
-    @apply font-mono font-semibold text-blue-500 md:text-3xl text-xl text-center;
+    @apply font-mono font-semibold text-white md:text-3xl text-xl text-center;
   }
   .quiz-card {
-    @apply flex justify-center items-center rounded-[2rem] bg-white/90 shadow-lg shadow-neutral-200 border-green-600 border-2;
+    @apply flex justify-center items-center rounded-[2rem] bg-white/30 shadow-md shadow-neutral-200/30;
   }
   .flex-center {
     @apply flex justify-center items-center;
   }
   .alternative-card {
-    @apply w-full h-20 hover:bg-slate-200/50 cursor-pointer border-[0.15rem] border-slate-800 rounded-xl shadow-md shadow-neutral-200;
+    @apply w-full h-20 hover:bg-slate-200/50 cursor-pointer border-[0.15rem] border-white/20 rounded-xl;
   }
   .alternative-text {
-    @apply font-mono font-semibold text-2xl text-slate-800;
+    @apply font-mono font-semibold text-2xl text-white;
   }
 
   @keyframes slide-up {
@@ -27,4 +27,9 @@
       transform: translateY(0);
     }
   }
+}
+
+body {
+  @apply bg-zinc-800;
+  @apply bg-cover;
 }

@@ -36,7 +36,7 @@ const StartQuizCard = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="quiz-card flex flex-col mx-16 my-16 h-full">
+    <div className="quiz-card flex flex-col mx-8 my-8 p-2 h-full">
       <h1 className="quiz-title md:text-3xl text-2xl">{quizTitle}</h1>
       {children}
     </div>
@@ -60,7 +60,7 @@ const QuizButton = ({ onClick, children }: { onClick: () => void; children: stri
   return (
     <button
       onClick={onClick}
-      className="my-20 text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-xl px-32 py-6 mr-2 mb-2">
+      className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-xl mt-12 h-14 w-44">
       {children}
     </button>
   );
@@ -91,7 +91,7 @@ export default () => {
 
   const quiz: quizTYPE = {
     quizHeader: {
-      quizTitle: 'Qual bairro de araçatuba mais combina com você 🤔 ?',
+      quizTitle: 'Qual bairro de Araçatuba mais combina com você 🤔?',
       quizTendency: {
         //Number of personality types is equal to the length of this object
         1: 'Água Branca',
@@ -208,8 +208,20 @@ export default () => {
   }
 
   return (
-    <div className="bg-slate-200 flex flex-col h-screen">
-      {hasQuizStarted ? (
+    <div className="h-screen flex flex-col">
+      {!hasQuizStarted && !hasQuizFinshed && (
+        <StartQuizCard quizTitle={quiz.quizHeader.quizTitle}>
+          <QuizButton
+            onClick={() => {
+              startQuiz();
+              nextQuestion(quizQuestionNumber);
+            }}>
+            Começar Quiz
+          </QuizButton>
+        </StartQuizCard>
+      )}
+
+      {hasQuizStarted && !hasQuizFinshed && (
         <>
           <QuestionCard
             questionTitle={quiz.quizQuestions[quizQuestionNumber as number]?.questionTitle}
@@ -241,16 +253,6 @@ export default () => {
             )}
           />
         </>
-      ) : (
-        <StartQuizCard quizTitle={quiz.quizHeader.quizTitle}>
-          <QuizButton
-            onClick={() => {
-              startQuiz();
-              nextQuestion(quizQuestionNumber);
-            }}>
-            Começar Quiz
-          </QuizButton>
-        </StartQuizCard>
       )}
       {hasQuizFinshed && <ResultCard result={quizResult} />}
     </div>
